@@ -44,6 +44,12 @@ localhost:8080
 
 Create the database using the script `db_script.sql` if you want to use the database.
 
+Set the following variables for database credentials
+```bash
+export DBUSER=your_db_username
+export DBPASS=your_db_password
+```
+
 Move to the right folder 
 ```bash
 cd mysqlmain
