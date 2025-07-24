@@ -14,6 +14,8 @@
 
             --text-light: #ffffff;
             --text-dark: #1a1a1a;
+            --error-bg: #ff4d4d;
+            --error-text: #fff;
         }
 
         * {
@@ -53,9 +55,9 @@
             margin-top: 15px;
             border: 1px solid var(--second-color);
             border-radius: 8px;
-            box-sizing: border-box;
             background-color: var(--fourth-color);
             color: var(--text-light);
+            box-sizing: border-box;
         }
 
         input[type="url"]::placeholder {
@@ -118,11 +120,21 @@
             justify-content: space-between;
             gap: 10px;
         }
+
+        .error-box {
+            background-color: var(--error-bg);
+            color: var(--error-text);
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 8px;
+            display: none;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
     </style>
 </head>
 
 <body>
-
     <div class="container">
         <h1>🔗 URL Shortener</h1>
 
@@ -130,6 +142,8 @@
             <input type="url" id="originalUrl" placeholder="Enter a long URL..." required />
             <button type="submit">Shorten URL</button>
         </form>
+
+        <div id="errorBox" class="error-box"></div>
 
         <div id="result" class="result">
             <p>Shortened URL:</p>
@@ -147,10 +161,15 @@
         const resultDiv = document.getElementById('result');
         const shortUrlInput = document.getElementById('shortUrl');
         const copyBtn = document.getElementById('copyBtn');
+        const errorBox = document.getElementById('errorBox');
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const originalUrl = document.getElementById('originalUrl').value;
+
+            // Reset previous messages
+            errorBox.style.display = 'none';
+            resultDiv.style.display = 'none';
 
             try {
                 const res = await fetch(endpoint, {
@@ -159,13 +178,19 @@
                     body: JSON.stringify({ url: originalUrl })
                 });
 
-                if (!res.ok) throw new Error('Failed to shorten URL');
-
                 const data = await res.json();
+
+                if (!res.ok) {
+                    errorBox.textContent = JSON.stringify(data, null, 2);
+                    errorBox.style.display = 'block';
+                    return;
+                }
+
                 shortUrlInput.value = data.shortURL;
                 resultDiv.style.display = 'block';
             } catch (err) {
-                alert(err.message);
+                errorBox.textContent = JSON.stringify({ error: err.message }, null, 2);
+                errorBox.style.display = 'block';
             }
         });
 
@@ -176,7 +201,6 @@
             setTimeout(() => (copyBtn.textContent = 'Copy'), 1500);
         });
     </script>
-
 </body>
 
 </html>

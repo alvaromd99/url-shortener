@@ -21,7 +21,6 @@ import (
 type ShortenRequest struct {
 	URL string `json:"url"`
 }
-
 type ShortenResponse struct {
 	OriginalURL string `json:"originalURL,omitempty"` // omitempty si alguna vez no es necesario
 	ShortURL    string `json:"shortURL"`
@@ -102,7 +101,7 @@ func (app *App) handleRedirectWithDB(w http.ResponseWriter, r *http.Request) {
 
 func generateUniqueCodeWithDB(db *sql.DB) (string, error) {
 	// Poner un limite para evitar bucles infinitos
-	for i := 0; i < maxAttempts; i++ {
+	for i := range maxAttempts {
 		res := make([]byte, codeLength)
 		for i := range codeLength {
 			res[i] = base62[rand.Intn(len(base62))]
