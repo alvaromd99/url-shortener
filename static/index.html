@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>URL Shortener</title>
+    <style>
+        :root {
+            --first-color: #ececec;
+            --second-color: #9fd3c7;
+            --third-color: #385170;
+            --fourth-color: #142d4c;
+
+            --text-light: #ffffff;
+            --text-dark: #1a1a1a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--fourth-color);
+            color: var(--text-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: var(--third-color);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--first-color);
+        }
+
+        input[type="url"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 15px;
+            border: 1px solid var(--second-color);
+            border-radius: 8px;
+            box-sizing: border-box;
+            background-color: var(--fourth-color);
+            color: var(--text-light);
+        }
+
+        input[type="url"]::placeholder {
+            color: #bbbbbb;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 15px;
+            background-color: var(--second-color);
+            color: var(--fourth-color);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: var(--first-color);
+            color: var(--third-color);
+        }
+
+        .result {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .short-url-input {
+            width: calc(100% - 80px);
+            padding: 10px;
+            border: 1px solid var(--second-color);
+            border-radius: 8px;
+            background-color: var(--fourth-color);
+            color: var(--text-light);
+            box-sizing: border-box;
+            margin-top: 15px;
+        }
+
+        .copy-btn {
+            width: 120px;
+            padding-block: 10px;
+            padding-inline: 15px;
+            background-color: var(--second-color);
+            color: var(--fourth-color);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .copy-btn:hover {
+            background-color: var(--first-color);
+            color: var(--third-color);
+        }
+
+        .url-box {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>🔗 URL Shortener</h1>
+
+        <form id="shortenForm">
+            <input type="url" id="originalUrl" placeholder="Enter a long URL..." required />
+            <button type="submit">Shorten URL</button>
+        </form>
+
+        <div id="result" class="result">
+            <p>Shortened URL:</p>
+            <div class="url-box">
+                <input type="text" id="shortUrl" class="short-url-input" readonly />
+                <button id="copyBtn" class="copy-btn">Copy</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const endpoint = 'http://localhost:8080/shorten'
+
+        const form = document.getElementById('shortenForm');
+        const resultDiv = document.getElementById('result');
+        const shortUrlInput = document.getElementById('shortUrl');
+        const copyBtn = document.getElementById('copyBtn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const originalUrl = document.getElementById('originalUrl').value;
+
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: originalUrl })
+                });
+
+                if (!res.ok) throw new Error('Failed to shorten URL');
+
+                const data = await res.json();
+                shortUrlInput.value = data.shortURL;
+                resultDiv.style.display = 'block';
+            } catch (err) {
+                alert(err.message);
+            }
+        });
+
+        copyBtn.addEventListener('click', () => {
+            shortUrlInput.select();
+            document.execCommand('copy');
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => (copyBtn.textContent = 'Copy'), 1500);
+        });
+    </script>
+
+</body>
+
+</html>
