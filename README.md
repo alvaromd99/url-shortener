@@ -29,6 +29,7 @@ Move to the right folder
 cd memorymain
 ```
 
+Run the project
 ```bash
 go run main.go
 ```
@@ -48,6 +49,7 @@ Move to the right folder
 cd mysqlmain
 ```
 
+Run the project
 ```bash
 go run main.go
 ```
